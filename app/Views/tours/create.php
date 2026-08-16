@@ -1,0 +1,1 @@
+<?= $this->extend('layouts/main') ?><?= $this->section('content') ?><?=view('components/page_header',['eyebrow'=>'Transactions / Tours','title'=>'New Tour','subtitle'=>'Create a tour package linked to a Product master.'])?><form method="post" action="<?=site_url('tours/store')?>"><?=csrf_field()?><?=view('tours/_form',['products'=>$products])?></form><?= $this->endSection() ?>

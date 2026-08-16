@@ -1,0 +1,514 @@
+:root {
+    --primary-color: #007bff; /* Biru cerah untuk aksi utama */
+    --secondary-color: #6c757d; /* Abu-abu untuk aksi sekunder */
+    --success-color: #28a745; /* Hijau untuk status positif */
+    --danger-color: #dc3545; /* Merah untuk pembatalan/peringatan */
+    --info-color: #17a2b8; /* Biru muda untuk informasi */
+    --warning-color: #ffc107; /* Kuning untuk peringatan */
+
+    --text-color: #343a40; /* Warna teks utama yang lebih gelap */
+    --muted-text-color: #6c757d; /* Warna teks sekunder/info */
+    --border-color: #e9ecef; /* Border yang lebih lembut */
+    --background-light: #f8f9fa; /* Latar belakang bagian-bagian */
+    --card-background: #ffffff; /* Latar belakang card */
+
+    --font-family: 'Inter', sans-serif; /* Font modern */
+    --border-radius: 8px; /* Sudut membulat untuk elemen */
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bayangan yang lebih lembut */
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-color);
+    background-color: #f0f2f5; /* Latar belakang halaman yang lebih netral */
+    margin: 0;
+    padding: 0;
+}
+
+.booking-detail-page {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px 30px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-text-color);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.booking-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.booking-detail-header h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+    color: var(--text-color);
+    font-weight: 900;
+}
+
+.booking-detail-header p {
+    margin: 5px 0 0;
+    color: var(--muted-text-color);
+    font-size: 13px;
+}
+
+.booking-detail-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.status-badge { /* Umum untuk status badge */
+    display: inline-flex;
+    align-items: center;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+}
+
+/* Warna spesifik untuk status badge */
+.status-badge.draft { background-color: var(--info-color); }
+.status-badge.pending { background-color: var(--warning-color); }
+.status-badge.confirmed { background-color: var(--success-color); }
+.status-badge.cancelled { background-color: var(--danger-color); }
+
+.booking-detail-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 8px 18px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #e2e6ea;
+    color: var(--text-color);
+    border-color: #dae0e5;
+}
+.btn-secondary:hover {
+    background-color: #d3d9df;
+    border-color: #c6ccda;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: #fff;
+    border-color: var(--danger-color);
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.booking-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.booking-kpi-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.booking-kpi-card span {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-text-color);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.booking-kpi-card strong {
+    display: block;
+    font-size: 20px; /* Ukuran lebih besar */
+    color: var(--text-color);
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+.booking-kpi-card small {
+    display: block;
+    color: var(--muted-text-color);
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.booking-kpi-outstanding {
+    border-color: #f5c6cb; /* Warna border yang lebih menonjol untuk outstanding */
+    background-color: #fff3f5; /* Latar belakang sedikit berbeda */
+}
+
+.booking-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); /* Penyesuaian lebar kolom */
+    gap: 20px;
+    align-items: start;
+}
+
+.booking-detail-main,
+.booking-detail-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+}
+
+.detail-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Rata tengah secara vertikal */
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-light); /* Header card sedikit berbeda */
+}
+
+.detail-card-header h2 {
+    margin: 0;
+    font-size: 17px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.detail-card-header p {
+    margin: 4px 0 0;
+    color: var(--muted-text-color);
+    font-size: 12px;
+}
+
+.detail-chip,
+.detail-count {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 20px;
+    padding: 5px 12px;
+    background: #eef8fc;
+    color: #087bb5;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.detail-count {
+    background-color: #e6f7ff;
+    color: #0056b3;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-info-grid > div {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.detail-info-grid > div:nth-child(4n) {
+    border-right: 0; /* Menghilangkan border kanan untuk kolom terakhir di baris 4 kolom */
+}
+
+.detail-info-grid span {
+    display: block;
+    color: var(--muted-text-color);
+    font-size: 11px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.detail-info-grid strong {
+    display: block;
+    color: var(--text-color);
+    font-size: 14px;
+    word-break: break-word;
+    font-weight: 600;
+}
+
+.booking-note {
+    padding: 15px 20px;
+    background-color: #fdfdfd;
+    border-top: 1px dashed var(--border-color); /* Garis putus-putus */
+}
+
+.booking-note span {
+    font-size: 11px;
+    color: var(--muted-text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.booking-note p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.booking-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Minimal width untuk tabel agar tidak terlalu sempit */
+}
+
+.booking-detail-table th,
+.booking-detail-table td {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    font-size: 13px;
+}
+
+.booking-detail-table th {
+    background-color: var(--background-light);
+    color: var(--muted-text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+}
+
+.booking-detail-table td {
+    color: var(--text-color);
+}
+
+.booking-detail-table td strong {
+    font-weight: 600;
+}
+
+.booking-detail-table td small {
+    display: block;
+    color: var(--muted-text-color);
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.booking-detail-table .empty-cell {
+    text-align: center;
+    color: var(--muted-text-color);
+    padding: 20px;
+    font-style: italic;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+/* Financial Summary Table */
+.financial-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.financial-summary-table td,
+.financial-summary-table th {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 13px;
+    text-align: left;
+}
+
+.financial-summary-table td:last-child,
+.financial-summary-table th:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.financial-summary-table th {
+    background-color: var(--background-light);
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.financial-summary-table .negative {
+    color: var(--danger-color);
+}
+
+.financial-summary-table .positive {
+    color: var(--success-color);
+}
+
+.financial-summary-table .financial-total th {
+    background: #e6f7ff; /* Warna latar belakang untuk total */
+    color: var(--primary-color);
+    font-size: 16px;
+    border-top: 2px solid #b3d7ff; /* Border yang lebih tebal */
+    font-weight: 700;
+}
+
+.financial-summary-table .financial-outstanding th {
+    background: #fff0f3; /* Warna latar belakang untuk outstanding */
+    color: var(--danger-color);
+    font-size: 16px;
+    border-bottom: 0;
+    font-weight: 700;
+}
+
+/* Next Process Card */
+.next-process-list {
+    padding: 10px 20px 15px;
+}
+
+.next-process-item {
+    display: flex;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    align-items: flex-start;
+}
+
+.next-process-item:last-child {
+    border-bottom: 0;
+}
+
+.process-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    margin-top: 6px;
+    flex-shrink: 0; /* Agar dot tidak mengecil */
+}
+
+.next-process-item strong {
+    display: block;
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.next-process-item small {
+    display: block;
+    color: var(--muted-text-color);
+    font-size: 11px;
+    line-height: 1.5;
+    margin-top: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1050px) {
+    .booking-detail-layout {
+        grid-template-columns: 1fr;
+    }
+    .booking-detail-sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Sidebar jadi grid 2 kolom atau 1 */
+        gap: 20px;
+    }
+    .booking-kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 800px) {
+    .booking-detail-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .booking-detail-actions {
+        justify-content: flex-start;
+    }
+    .booking-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    .detail-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .detail-info-grid > div:nth-child(2n) {
+        border-right: 0;
+    }
+    .detail-info-grid > div:nth-child(odd) {
+        border-right: 1px solid var(--border-color);
+    }
+    .booking-detail-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .booking-detail-page {
+        padding: 0 15px 20px;
+    }
+    .booking-detail-header h1 {
+        font-size: 24px;
+    }
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+    .detail-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .detail-info-grid > div {
+        border-right: 0 !important;
+    }
+    .booking-detail-table th,
+    .booking-detail-table td {
+        padding: 10px 15px;
+    }
+    .financial-summary-table td,
+    .financial-summary-table th {
+        padding: 10px 15px;
+    }
+}

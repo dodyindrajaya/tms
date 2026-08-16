@@ -1,0 +1,11 @@
+<?= $this->extend('layouts/main') ?>
+<?= $this->section('content') ?>
+<?= view('components/page_header',['eyebrow'=>'Master Data','title'=>'Customers','subtitle'=>'Manage customer profiles and contact information.','action'=>['label'=>'New Customer','url'=>site_url('customers/create')]]) ?>
+<div class="stat-grid"><div class="stat-card"><div class="stat-top"><div><div class="stat-label">Customer Records</div><div class="stat-value"><?=number_format(count($customers))?></div></div><div class="stat-icon">♙</div></div><div class="stat-meta">Current page</div></div></div>
+<?= view('components/search_bar',['action'=>site_url('customers'),'placeholder'=>'Search code, name, phone or email...','value'=>$q,'filters'=>[['name'=>'customer_type','label'=>'All Types','value'=>$type,'options'=>['individual'=>'Individual','corporate'=>'Corporate']]]]) ?>
+<div class="card"><div class="table-wrap">
+<?php if(empty($customers)): ?><?=view('components/empty_state',['title'=>'No customers found','message'=>'Create your first customer or change the search filter.','action'=>['label'=>'New Customer','url'=>site_url('customers/create')]])?>
+<?php else: ?><table><thead><tr><th>Code</th><th>Customer</th><th>Type</th><th>Phone</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>
+<?php foreach($customers as $c): ?><tr><td><strong><?=esc($c['customer_code'])?></strong></td><td><strong><?=esc($c['name'])?></strong><?php if(!empty($c['city'])):?><div class="muted-text"><?=esc($c['city'])?></div><?php endif;?></td><td><?=esc(ucfirst($c['customer_type']??'-'))?></td><td><?=esc($c['phone']??'-')?></td><td><?=esc($c['email']??'-')?></td><td><?=view('components/status_badge',['status'=>!empty($c['is_active'])?'active':'inactive'])?></td><td><div class="table-actions"><a class="btn btn-secondary" href="<?=site_url('customers/edit/'.$c['id'])?>">Edit</a><form method="post" action="<?=site_url('customers/delete/'.$c['id'])?>" onsubmit="return confirm('Delete this customer?');" style="display:inline"><?=csrf_field()?><button class="btn btn-danger">Delete</button></form></div></td></tr><?php endforeach; ?></tbody></table>
+<?php if($pager->getPageCount()>1): ?><div class="pagination-wrap"><?=$pager->links()?></div><?php endif; ?><?php endif; ?></div></div>
+<?= $this->endSection() ?>
