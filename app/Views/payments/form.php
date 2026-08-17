@@ -1,12 +1,15 @@
 <?= $this->extend('layouts/main') ?>
+<?= $this->section('head') ?><link rel="stylesheet" href="<?= base_url('css/finance.css') ?>"><?= $this->endSection() ?>
 <?= $this->section('content') ?>
-<h1>Receive Customer Payment</h1>
-<form method="post" action="<?= site_url('payments/store') ?>">
-<label>Booking *</label><select name="booking_id" required><?php foreach($bookings as $b): ?><option value="<?= $b['id'] ?>"><?= esc($b['booking_no'].' - Rp '.number_format($b['outstanding_amount'],2)) ?></option><?php endforeach ?></select>
-<label>Payment Date</label><input type="date" name="payment_date" value="<?= date('Y-m-d') ?>">
-<label>Amount *</label><input type="number" step="0.01" name="amount" required>
-<label>Reference</label><input name="reference_no" placeholder="Transfer ref">
-<label>Notes</label><textarea name="notes"></textarea>
-<button type="submit">Save & Post Payment</button>
-</form>
+<div class="page-header"><div><div class="eyebrow">FINANCE / RECEIPT</div><h1>Receive Customer Payment</h1><p>Apply a receipt to a posted customer invoice. The journal is created automatically.</p></div></div>
+<form method="post" action="<?= site_url('payments/store') ?>" class="card finance-form"><div class="form-section-title">Payment Information</div>
+<div class="form-grid-2"><div class="form-group"><label>Invoice *</label><select name="invoice_id" id="invoice_id" required><option value="">-- Select Invoice --</option><?php $selectedInvoice=(int)($selectedInvoiceId ?? service('request')->getGet('invoice_id') ?? old('invoice_id')); foreach($invoices as $i): ?><option value="<?= (int)$i['id'] ?>" data-outstanding="<?= esc($i['outstanding_amount']) ?>" <?= $selectedInvoice===(int)$i['id']?'selected':'' ?>><?= esc($i['invoice_no'].' — '.$i['customer_name'].' — Rp '.number_format((float)$i['outstanding_amount'],0,',','.')) ?></option><?php endforeach ?></select></div>
+<div class="form-group"><label>Payment Method *</label><select name="payment_method_id" required><option value="">-- Select Method --</option><?php foreach($paymentMethods as $m): ?><option value="<?= (int)$m['id'] ?>" <?= old('payment_method_id')==(int)$m['id']?'selected':'' ?>><?= esc($m['name']) ?></option><?php endforeach ?></select></div>
+<div class="form-group"><label>Payment Date *</label><input type="datetime-local" name="payment_date" value="<?= esc(old('payment_date',date('Y-m-d\TH:i'))) ?>" required></div>
+<div class="form-group"><label>Amount *</label><input type="number" step="0.01" min="0.01" name="amount" id="payment_amount" value="<?= esc(old('amount')) ?>" required><small id="payment_hint" class="field-help"></small></div>
+<div class="form-group"><label>Reference</label><input name="reference_no" value="<?= esc(old('reference_no')) ?>" placeholder="Bank transfer reference / receipt no."></div>
+<div class="form-group"><label>Notes</label><textarea name="notes" rows="3" placeholder="Optional notes..."><?= esc(old('notes')) ?></textarea></div></div>
+<div class="payment-posting-preview"><div><span>Posting</span><strong>DR Cash / Bank</strong></div><div><span>Posting</span><strong>CR Accounts Receivable</strong></div><div><span>Journal</span><strong>Automatic</strong></div></div>
+<div class="form-actions"><a class="btn btn-secondary" href="<?= site_url('payments') ?>">Cancel</a><button class="btn btn-primary" type="submit">Save &amp; Post Payment</button></div></form>
+<?= $this->section('scripts') ?><script>const inv=document.getElementById('invoice_id'), amt=document.getElementById('payment_amount'), hint=document.getElementById('payment_hint'); function updatePay(){const o=inv?.options[inv.selectedIndex];const x=parseFloat(o?.dataset.outstanding||0);hint.textContent=x?'Outstanding: Rp '+new Intl.NumberFormat('id-ID').format(x):'';if(x&&(!amt.value||parseFloat(amt.value)>x))amt.value=x.toFixed(2);}inv?.addEventListener('change',updatePay);updatePay();</script><?= $this->endSection() ?>
 <?= $this->endSection() ?>

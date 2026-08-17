@@ -48,6 +48,12 @@
         <a class="nav-item" href="<?= site_url('finance') ?>">
             <span class="nav-icon">◫</span><span>Finance Dashboard</span>
         </a>
+        <a class="nav-item" href="<?= site_url('accounting/accounts') ?>">
+            <span class="nav-icon">COA</span><span>Chart of Accounts</span>
+        </a>
+        <a class="nav-item" href="<?= site_url('accounting/journal') ?>">
+            <span class="nav-icon">J</span><span>Journal Entries</span>
+        </a>
         <a class="nav-item" href="<?= site_url('accounting/gl') ?>">
             <span class="nav-icon">Σ</span><span>General Ledger</span>
         </a>

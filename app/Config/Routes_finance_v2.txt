@@ -1,0 +1,6 @@
+Add these routes to app/Config/Routes.php if they are not already present:
+
+$routes->get('finance', 'AccountingController::finance');
+$routes->get('accounting/finance', 'AccountingController::finance');
+
+No migration is required.

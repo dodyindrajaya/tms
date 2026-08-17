@@ -34,7 +34,7 @@ $routes->get('bookings/(:num)', 'BookingsController::show/$1');
 $routes->get('bookings/(:num)/invoice', 'BookingsController::invoice/$1'); */
 
 // Invoices
-$routes->get('invoices', 'InvoicesController::index');
+/* $routes->get('invoices', 'InvoicesController::index');
 $routes->get('invoices/(:num)', 'InvoicesController::show/$1');
 $routes->get('invoices/(:num)/post', 'InvoicesController::post/$1');
 
@@ -42,10 +42,57 @@ $routes->get('invoices/(:num)/post', 'InvoicesController::post/$1');
 $routes->get('payments', 'PaymentsController::index');
 $routes->get('payments/create', 'PaymentsController::create');
 $routes->post('payments/store', 'PaymentsController::store');
-
+ */
 // Accounting
+$routes->get('finance', 'AccountingController::finance');
+$routes->get('ledger', 'AccountingController::gl');
+$routes->get('accounting/finance', 'AccountingController::finance');
+$routes->get('accounting/journal', 'AccountingController::journal');
+/* $routes->get('accounting/gl', 'AccountingController::gl');
+$routes->get('accounting/ar', 'AccountingController::ar');
+$routes->get('accounting/ap', 'AccountingController::ap'); */
+
+// Copy these lines into app/Config/Routes.php
+/* $routes->get('accounting/accounts', 'ChartOfAccounts::index');
+$routes->get('accounting/accounts/create', 'ChartOfAccounts::create');
+$routes->post('accounting/accounts/store', 'ChartOfAccounts::store');
+$routes->get('accounting/accounts/show/(:num)', 'ChartOfAccounts::show/$1');
+$routes->get('accounting/accounts/edit/(:num)', 'ChartOfAccounts::edit/$1');
+$routes->post('accounting/accounts/update/(:num)', 'ChartOfAccounts::update/$1');
+$routes->post('accounting/accounts/toggle/(:num)', 'ChartOfAccounts::toggle/$1');
+$routes->post('accounting/accounts/delete/(:num)', 'ChartOfAccounts::delete/$1');
+$routes->get('accounting/coa', 'ChartOfAccounts::index'); */
+
+// Add these routes to app/Config/Routes.php. They are intentionally separate
+// so the finance package can be installed without replacing the whole route file.
+$routes->get('finance', 'FinanceController::index');
+
+$routes->get('invoices', 'InvoicesController::index');
+$routes->get('invoices/create/booking/(:num)', 'InvoicesController::createFromBooking/$1');
+$routes->post('invoices/create/booking/(:num)', 'InvoicesController::createFromBooking/$1');
+$routes->get('invoices/(:num)', 'InvoicesController::show/$1');
+$routes->get('invoices/(:num)/post', 'InvoicesController::post/$1');
+
+$routes->get('payments', 'PaymentsController::index');
+$routes->get('payments/create', 'PaymentsController::create');
+$routes->post('payments/store', 'PaymentsController::store');
+
 $routes->get('accounting/journal', 'AccountingController::journal');
 $routes->get('accounting/gl', 'AccountingController::gl');
+$routes->get('accounting/ar', 'AccountingController::ar');
+$routes->get('accounting/ap', 'AccountingController::ap');
+
+// COA V1 routes from the latest COA package.
+$routes->get('accounting/accounts', 'ChartOfAccounts::index');
+$routes->get('accounting/accounts/create', 'ChartOfAccounts::create');
+$routes->post('accounting/accounts/store', 'ChartOfAccounts::store');
+$routes->get('accounting/accounts/show/(:num)', 'ChartOfAccounts::show/$1');
+$routes->get('accounting/accounts/edit/(:num)', 'ChartOfAccounts::edit/$1');
+$routes->post('accounting/accounts/update/(:num)', 'ChartOfAccounts::update/$1');
+$routes->post('accounting/accounts/toggle/(:num)', 'ChartOfAccounts::toggle/$1');
+$routes->post('accounting/accounts/delete/(:num)', 'ChartOfAccounts::delete/$1');
+$routes->get('accounting/coa', 'ChartOfAccounts::index');
+//---
 
 // Products
 $routes->get('products', 'Products::index');
@@ -88,3 +135,47 @@ $routes->post('tours/update/(:num)', 'Tours::update/$1');
 $routes->get('tours/departures/(:num)', 'Tours::departures/$1');
 $routes->post('tours/departures/store/(:num)', 'Tours::storeDeparture/$1');
 $routes->post('tours/departures/cancel/(:num)', 'Tours::cancelDeparture/$1');
+
+/* // Passengers
+$routes->get('passengers', 'Passengers::index');
+$routes->get('passengers/create', 'Passengers::create');
+$routes->post('passengers/store', 'Passengers::store');
+$routes->get('passengers/edit/(:num)', 'Passengers::edit/$1');
+$routes->post('passengers/update/(:num)', 'Passengers::update/$1');
+$routes->post('passengers/delete/(:num)', 'Passengers::delete/$1'); */
+
+//-- routes by gpt
+/* $routes->get('ticketing', 'Ticketing::index');
+$routes->get('ticketing/new', 'Ticketing::new');
+$routes->post('ticketing/create', 'Ticketing::create');
+$routes->get('ticketing/show/(:num)', 'Ticketing::show/$1');
+$routes->get('ticketing/edit/(:num)', 'Ticketing::edit/$1');
+$routes->post('ticketing/update/(:num)', 'Ticketing::update/$1');
+$routes->post('ticketing/delete/(:num)', 'Ticketing::delete/$1');
+$routes->get('ticketing/booking-passengers/(:num)', 'Ticketing::bookingPassengers/$1');
+
+$routes->get('passengers', 'Passengers::index');
+$routes->get('passengers/new', 'Passengers::new');
+$routes->post('passengers/create', 'Passengers::create');
+$routes->get('passengers/show/(:num)', 'Passengers::show/$1');
+$routes->get('passengers/edit/(:num)', 'Passengers::edit/$1');
+$routes->post('passengers/update/(:num)', 'Passengers::update/$1');
+$routes->post('passengers/delete/(:num)', 'Passengers::delete/$1'); */
+
+//--
+$routes->get('ticketing', 'Ticketing::index');
+$routes->get('ticketing/new', 'Ticketing::new');
+$routes->post('ticketing/create', 'Ticketing::create');
+$routes->get('ticketing/show/(:num)', 'Ticketing::show/$1');
+$routes->get('ticketing/edit/(:num)', 'Ticketing::edit/$1');
+$routes->post('ticketing/update/(:num)', 'Ticketing::update/$1');
+$routes->post('ticketing/delete/(:num)', 'Ticketing::delete/$1');
+$routes->get('ticketing/booking-passengers/(:num)', 'Ticketing::bookingPassengers/$1');
+
+$routes->get('passengers', 'Passengers::index');
+$routes->get('passengers/new', 'Passengers::new');
+$routes->post('passengers/create', 'Passengers::create');
+$routes->get('passengers/show/(:num)', 'Passengers::show/$1');
+$routes->get('passengers/edit/(:num)', 'Passengers::edit/$1');
+$routes->post('passengers/update/(:num)', 'Passengers::update/$1');
+$routes->post('passengers/delete/(:num)', 'Passengers::delete/$1');

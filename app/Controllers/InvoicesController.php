@@ -10,9 +10,10 @@ class InvoicesController extends BaseController
     {
         $db = db_connect();
         $invoices = $db->table('invoices i')
-            ->select('i.*, c.name AS customer_name, b.booking_no')
+            ->select('i.*, c.name AS customer_name, b.booking_no, je.entry_no')
             ->join('customers c','c.id=i.customer_id','left')
             ->join('bookings b','b.id=i.booking_id','left')
+            ->join('journal_entries je','je.id=i.journal_entry_id','left')
             ->orderBy('i.id','DESC')->get()->getResultArray();
 
         return view('invoices/index', ['title'=>'Invoices','invoices'=>$invoices]);
@@ -22,9 +23,10 @@ class InvoicesController extends BaseController
     {
         $db = db_connect();
         $invoice = $db->table('invoices i')
-            ->select('i.*, c.name AS customer_name, b.booking_no')
+            ->select('i.*, c.name AS customer_name, b.booking_no, je.entry_no')
             ->join('customers c','c.id=i.customer_id','left')
             ->join('bookings b','b.id=i.booking_id','left')
+            ->join('journal_entries je','je.id=i.journal_entry_id','left')
             ->where('i.id',$id)->get()->getRowArray();
 
         if (!$invoice) throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
@@ -37,8 +39,9 @@ class InvoicesController extends BaseController
     public function post(int $id)
     {
         try {
-            (new InvoiceService())->post($id);
-            return redirect()->back()->with('success','Invoice posted and journal created.');
+            $userId = session('user_id') ? (int)session('user_id') : null;
+            $entryId = (new InvoiceService())->post($id, $userId);
+            return redirect()->back()->with('success',"Invoice posted. Journal entry #{$entryId} created.");
         } catch (\Throwable $e) {
             return redirect()->back()->with('error',$e->getMessage());
         }

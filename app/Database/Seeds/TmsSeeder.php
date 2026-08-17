@@ -258,6 +258,32 @@ class TmsSeeder extends Seeder
         }
 
         // ---------------------------------------------------------
+        // FISCAL PERIODS
+        // ---------------------------------------------------------
+        $fy = $db->table('fiscal_years')->where('year', $year)->get()->getRow();
+        if ($fy) {
+            for ($month = 1; $month <= 12; $month++) {
+                $start = sprintf('%04d-%02d-01', $year, $month);
+                $end = date('Y-m-t', strtotime($start));
+                $exists = $db->table('fiscal_periods')
+                    ->where('fiscal_year_id', $fy->id)
+                    ->where('period_no', $month)
+                    ->get()->getRow();
+                if (!$exists) {
+                    $db->table('fiscal_periods')->insert([
+                        'fiscal_year_id' => $fy->id,
+                        'period_no' => $month,
+                        'start_date' => $start,
+                        'end_date' => $end,
+                        'status' => 'open',
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+                }
+            }
+        }
+
+        // ---------------------------------------------------------
         // JOURNALS
         // ---------------------------------------------------------
         $journals = [
@@ -289,27 +315,34 @@ class TmsSeeder extends Seeder
         // ---------------------------------------------------------
         // PAYMENT METHODS
         // ---------------------------------------------------------
-        $cash = $db->table('accounts')
-            ->where('code', '1100')
-            ->get()
-            ->getRow();
+        $cash = $db->table('accounts')->where('code', '1100')->get()->getRow();
+        $bank = $db->table('accounts')->where('code', '1200')->get()->getRow();
 
-        if ($cash) {
-            $exists = $db->table('payment_methods')
-                ->where('code', 'CASH')
-                ->get()
-                ->getRow();
+        $paymentMethods = [
+            ['code' => 'CASH', 'name' => 'Cash', 'method_type' => 'cash', 'account' => $cash?->id],
+            ['code' => 'BCA_TRANSFER', 'name' => 'BCA Transfer', 'method_type' => 'bank', 'account' => $bank?->id],
+            ['code' => 'BANK_TRANSFER', 'name' => 'Bank Transfer', 'method_type' => 'bank', 'account' => $bank?->id],
+            ['code' => 'QRIS', 'name' => 'QRIS', 'method_type' => 'bank', 'account' => $bank?->id],
+        ];
 
+        foreach ($paymentMethods as $row) {
+            if (!$row['account']) {
+                continue;
+            }
+            $exists = $db->table('payment_methods')->where('code', $row['code'])->get()->getRow();
+            $data = [
+                'code' => $row['code'],
+                'name' => $row['name'],
+                'method_type' => $row['method_type'],
+                'clearing_account_id' => $row['account'],
+                'is_active' => 1,
+                'updated_at' => $now,
+            ];
             if (!$exists) {
-                $db->table('payment_methods')->insert([
-                    'code'              => 'CASH',
-                    'name'              => 'Cash',
-                    'method_type'       => 'cash',
-                    'clearing_account_id' => $cash->id,
-                    'is_active'         => 1,
-                    'created_at'        => $now,
-                    'updated_at'        => $now,
-                ]);
+                $data['created_at'] = $now;
+                $db->table('payment_methods')->insert($data);
+            } else {
+                $db->table('payment_methods')->where('id', $exists->id)->update($data);
             }
         }
 

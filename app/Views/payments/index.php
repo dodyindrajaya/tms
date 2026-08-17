@@ -1,6 +1,6 @@
 <?= $this->extend('layouts/main') ?>
+<?= $this->section('head') ?><link rel="stylesheet" href="<?= base_url('css/finance.css') ?>"><?= $this->endSection() ?>
 <?= $this->section('content') ?>
-<h1>Payments</h1><p><a class="btn" href="<?= site_url('payments/create') ?>">+ Receive Payment</a></p>
-<table><tr><th>Payment</th><th>Date</th><th>Booking</th><th>Customer</th><th>Amount</th><th>Reference</th></tr>
-<?php foreach($payments as $p): ?><tr><td><?= esc($p['payment_no']) ?></td><td><?= esc($p['payment_date']) ?></td><td><?= esc($p['booking_no']) ?></td><td><?= esc($p['customer_name']) ?></td><td class="money"><?= number_format($p['amount'],2) ?></td><td><?= esc($p['reference_no']) ?></td></tr><?php endforeach ?>
-</table><?= $this->endSection() ?>
+<div class="page-header"><div><div class="eyebrow">FINANCE / CASH RECEIPTS</div><h1>Payments</h1><p>Customer receipts posted automatically to Cash/Bank and Accounts Receivable.</p></div><a class="btn btn-primary" href="<?= site_url('payments/create') ?>">+ Receive Payment</a></div>
+<div class="card finance-table-card"><div class="section-head"><div><h2>Payment Records</h2><p><?= count($payments) ?> record(s)</p></div></div><div class="table-wrap"><table><thead><tr><th>Payment No</th><th>Date</th><th>Customer</th><th>Booking</th><th>Method</th><th>Account</th><th>Reference</th><th>Amount</th><th>Journal</th></tr></thead><tbody><?php if(!$payments): ?><tr><td colspan="9" class="empty-cell">No payments recorded.</td></tr><?php endif ?><?php foreach($payments as $p): ?><tr><td><strong><?= esc($p['payment_no']) ?></strong></td><td><?= esc($p['payment_date']) ?></td><td><?= esc($p['customer_name']) ?></td><td><?= esc($p['booking_no']) ?></td><td><?= esc($p['payment_method']) ?></td><td><?= esc($p['account_code'].' - '.$p['account_name']) ?></td><td><?= esc($p['reference_no'] ?: '-') ?></td><td class="money"><strong>Rp <?= number_format((float)$p['amount'],0,',','.') ?></strong></td><td><?= $p['journal_entry_id'] ? '#'.(int)$p['journal_entry_id'] : '-' ?></td></tr><?php endforeach ?></tbody></table></div></div>
+<?= $this->endSection() ?>

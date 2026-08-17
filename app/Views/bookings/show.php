@@ -29,7 +29,6 @@ $statusClass = [
         <div class="booking-detail-actions">
             <a class="btn btn-secondary" href="<?= site_url('bookings') ?>">Back</a>
             <a class="btn btn-secondary" href="<?= site_url('bookings/edit/' . $booking['id']) ?>">Edit Booking</a>
-
             <?php if ($booking['status'] !== 'cancelled'): ?>
                 <form method="post"
                       action="<?= site_url('bookings/cancel/' . $booking['id']) ?>"
@@ -238,6 +237,16 @@ $statusClass = [
                     <div>
                         <h2>Financial Summary</h2>
                         <p>Current booking value.</p>
+                    </div>
+                    <div class="table-actions">
+                        <?php if (!empty($invoice)): ?>
+                            <a class="btn btn-secondary" href="<?= site_url('invoices/'.$invoice['id']) ?>">View Invoice</a>
+                        <?php else: ?>
+                            <a class="btn btn-primary" href="<?= site_url('bookings/'.$booking['id'].'/invoice') ?>">Create Invoice</a>
+                        <?php endif; ?>
+                        <?php if ((float)$booking['outstanding_amount'] > 0): ?>
+                            <a class="btn btn-secondary" href="<?= site_url('payments/create') ?>">Receive Payment</a>
+                        <?php endif; ?>
                     </div>
                 </div>
 

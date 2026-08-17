@@ -17,138 +17,158 @@ class PaymentService
     }
 
     /**
-     * Customer receipt:
-     * DR Cash/Bank
+     * Receive customer payment against the booking's posted invoice.
+     * DR Cash/Bank (payment method clearing account)
      * CR Accounts Receivable
      */
     public function receiveCustomerPayment(array $data): int
     {
-        $bookingId = (int)($data['booking_id'] ?? 0);
-        $amount = (float)($data['amount'] ?? 0);
-
-        if (!$bookingId || $amount <= 0) {
-            throw new RuntimeException('booking_id and positive amount are required.');
+        $invoiceId = (int) ($data['invoice_id'] ?? 0);
+        $amount = round((float) ($data['amount'] ?? 0), 2);
+        if ($invoiceId <= 0 || $amount <= 0) {
+            throw new RuntimeException('Invoice and a positive payment amount are required.');
         }
 
-        $booking = $this->db->table('bookings')->where('id', $bookingId)->get()->getRowArray();
-
-        if (!$booking) {
-            throw new RuntimeException('Booking not found.');
+        $invoice = $this->db->table('invoices')->where('id', $invoiceId)->get()->getRowArray();
+        if (!$invoice) {
+            throw new RuntimeException('Invoice not found.');
+        }
+        if (!in_array($invoice['status'], ['posted', 'partial', 'overdue'], true)) {
+            throw new RuntimeException('Invoice must be posted before receiving payment.');
         }
 
-        $customerId = (int)$booking['customer_id'];
-        $cashAccount = (int)($data['account_id'] ?? $this->accounting->accountId('1100'));
+        $outstanding = max(0, (float) $invoice['total_amount'] - (float) $invoice['paid_amount']);
+        if ($outstanding <= 0) {
+            throw new RuntimeException('This invoice has no outstanding balance.');
+        }
+        if ($amount > $outstanding + 0.005) {
+            throw new RuntimeException('Payment exceeds invoice outstanding balance of ' . number_format($outstanding, 2) . '.');
+        }
+
+        $methodId = (int) ($data['payment_method_id'] ?? 0);
+        $method = $this->db->table('payment_methods')->where('id', $methodId)->where('is_active', 1)->get()->getRowArray();
+        if (!$method) {
+            throw new RuntimeException('Please select a valid active payment method.');
+        }
+
+        $cashBankAccount = (int) $method['clearing_account_id'];
         $arAccount = $this->accounting->accountId('1300');
-
+        $paymentDate = !empty($data['payment_date']) ? date('Y-m-d H:i:s', strtotime($data['payment_date'])) : date('Y-m-d H:i:s');
+        $createdBy = !empty($data['created_by']) ? (int) $data['created_by'] : (int) (session('user_id') ?: 1);
         $paymentNo = 'PAY-' . date('YmdHis') . '-' . strtoupper(bin2hex(random_bytes(2)));
+        $bookingId = (int) $invoice['booking_id'];
+        $customerId = (int) $invoice['customer_id'];
 
         $this->db->transStart();
-
         $this->db->table('payments')->insert([
             'payment_no' => $paymentNo,
-            'payment_date' => $data['payment_date'] ?? date('Y-m-d'),
+            'payment_date' => $paymentDate,
             'payment_type' => 'customer_receipt',
             'booking_id' => $bookingId,
             'customer_id' => $customerId,
             'supplier_id' => null,
-            'account_id' => $cashAccount,
+            'account_id' => $cashBankAccount,
             'amount' => $amount,
-            'payment_method_id' => $data['payment_method_id'] ?? null,
-            'reference_no' => $data['reference_no'] ?? null,
-            'notes' => $data['notes'] ?? null,
-            'created_by' => $data['created_by'] ?? null,
+            'payment_method_id' => $methodId,
+            'reference_no' => trim((string) ($data['reference_no'] ?? '')) ?: null,
+            'notes' => trim((string) ($data['notes'] ?? '')) ?: null,
+            'journal_entry_id' => null,
+            'created_by' => $createdBy,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
-
-        $paymentId = (int)$this->db->insertID();
-
+        $paymentId = (int) $this->db->insertID();
         $this->db->transComplete();
-
         if ($this->db->transStatus() === false) {
             throw new RuntimeException('Failed to save payment.');
         }
 
-        $entryId = $this->accounting->createJournalEntry([
-            'journal_id' => $this->journalId('CASH'),
-            'entry_no' => $this->accounting->nextEntryNo('PAY'),
-            'entry_date' => $data['payment_date'] ?? date('Y-m-d'),
-            'reference_type' => 'payment',
-            'reference_id' => $paymentId,
-            'description' => 'Customer payment ' . $paymentNo,
-            'created_by' => $data['created_by'] ?? null,
-        ], [
-            [
-                'account_id' => $cashAccount,
-                'customer_id' => $customerId,
-                'booking_id' => $bookingId,
-                'description' => 'Customer receipt',
-                'debit' => $amount,
-                'credit' => 0,
-            ],
-            [
-                'account_id' => $arAccount,
-                'customer_id' => $customerId,
-                'booking_id' => $bookingId,
-                'description' => 'Reduce receivable',
-                'debit' => 0,
-                'credit' => $amount,
-            ],
-        ]);
+        try {
+            $entryId = $this->accounting->createJournalEntry([
+                'journal_id' => $this->journalIdForMethod($method['method_type']),
+                'entry_no' => $this->accounting->nextEntryNo('PAY'),
+                'entry_date' => substr($paymentDate, 0, 10),
+                'reference_type' => 'payment',
+                'reference_id' => $paymentId,
+                'description' => 'Customer receipt ' . $paymentNo,
+                'created_by' => $createdBy,
+            ], [
+                [
+                    'account_id' => $cashBankAccount,
+                    'customer_id' => $customerId,
+                    'booking_id' => $bookingId,
+                    'description' => $method['name'] . ' - customer receipt',
+                    'debit' => $amount,
+                    'credit' => 0,
+                ],
+                [
+                    'account_id' => $arAccount,
+                    'customer_id' => $customerId,
+                    'booking_id' => $bookingId,
+                    'description' => 'Reduce receivable - ' . $invoice['invoice_no'],
+                    'debit' => 0,
+                    'credit' => $amount,
+                ],
+            ]);
 
-        $this->accounting->postJournalEntry($entryId, $data['created_by'] ?? null);
-
-        $this->db->table('payments')->where('id', $paymentId)->update([
-            'journal_entry_id' => $entryId,
-            'updated_at' => date('Y-m-d H:i:s'),
-        ]);
-
-        $this->recalculateBookingPayment($bookingId);
+            $this->accounting->postJournalEntry($entryId, $createdBy);
+            $this->db->table('payments')->where('id', $paymentId)->update([
+                'journal_entry_id' => $entryId,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            $this->recalculateInvoiceAndBooking($invoiceId, $bookingId);
+        } catch (\Throwable $e) {
+            // Remove the unposted payment if journal creation fails, so a failed receipt cannot remain orphaned.
+            $this->db->table('payments')->where('id', $paymentId)->delete();
+            throw $e;
+        }
 
         return $paymentId;
     }
 
-    protected function recalculateBookingPayment(int $bookingId): void
+    protected function recalculateInvoiceAndBooking(int $invoiceId, int $bookingId): void
     {
-        $booking = $this->db->table('bookings')->where('id', $bookingId)->get()->getRowArray();
+        $invoice = $this->db->table('invoices')->where('id', $invoiceId)->get()->getRowArray();
+        if (!$invoice) return;
 
-        if (!$booking) {
-            return;
-        }
-
-        $paid = (float)($this->db->table('payments')
+        $paid = (float) ($this->db->table('payments')
             ->selectSum('amount', 'total')
             ->where('booking_id', $bookingId)
             ->where('payment_type', 'customer_receipt')
             ->get()->getRow()->total ?? 0);
 
-        $outstanding = max(0, (float)$booking['total_amount'] - $paid);
+        $outstanding = max(0, (float) $invoice['total_amount'] - $paid);
+        $status = $outstanding <= 0.005 ? 'paid' : ($paid > 0 ? 'partial' : 'posted');
+        if ($outstanding > 0 && !empty($invoice['due_date']) && $invoice['due_date'] < date('Y-m-d')) {
+            $status = $paid > 0 ? 'partial' : 'overdue';
+        }
 
-        $this->db->table('bookings')->where('id', $bookingId)->update([
-            'paid_amount' => $paid,
+        $this->db->table('invoices')->where('id', $invoiceId)->update([
+            'paid_amount' => min((float) $invoice['total_amount'], $paid),
             'outstanding_amount' => $outstanding,
-            'status' => $outstanding <= 0 ? 'paid' : ($paid > 0 ? 'partial_paid' : $booking['status']),
+            'status' => $status,
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
-        $this->db->table('invoices')
-            ->where('booking_id', $bookingId)
-            ->update([
-                'paid_amount' => $paid,
-                'outstanding_amount' => $outstanding,
-                'status' => $outstanding <= 0 ? 'paid' : ($paid > 0 ? 'partial_paid' : 'posted'),
+        $booking = $this->db->table('bookings')->where('id', $bookingId)->get()->getRowArray();
+        if ($booking) {
+            $bookingStatus = $outstanding <= 0.005 ? 'paid' : ($paid > 0 ? 'partial_paid' : $booking['status']);
+            $this->db->table('bookings')->where('id', $bookingId)->update([
+                'paid_amount' => min((float) $booking['total_amount'], $paid),
+                'outstanding_amount' => max(0, (float) $booking['total_amount'] - $paid),
+                'status' => $bookingStatus,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
+        }
     }
 
-    protected function journalId(string $code): int
+    protected function journalIdForMethod(string $methodType): int
     {
-        $row = $this->db->table('journals')->where('code', $code)->get()->getRow();
-
+        $code = in_array($methodType, ['bank', 'transfer', 'card'], true) ? 'BANK' : 'CASH';
+        $row = $this->db->table('journals')->where('code', $code)->where('is_active', 1)->get()->getRow();
         if (!$row) {
-            throw new RuntimeException("Journal {$code} not found.");
+            throw new RuntimeException("Journal {$code} not found or inactive.");
         }
-
-        return (int)$row->id;
+        return (int) $row->id;
     }
 }

@@ -22,7 +22,7 @@ class Tickets extends BaseController
             ->join('bookings','bookings.id=ticket_bookings.booking_id','left')
             ->join('passengers','passengers.id=ticket_bookings.passenger_id','left');
 
-        if($q!=='') $builder->groupStart()->like('ticket_bookings.booking_code',$q)->orLike('ticket_bookings.ticket_number',$q)->orLike('passengers.name',$q)->groupEnd();
+        if($q!=='') $builder->groupStart()->like('ticket_bookings.booking_code',$q)->orLike('ticket_bookings.ticket_number',$q)->orLike('passengers.full_name',$q)->groupEnd();
         if($type!=='') $builder->where('ticket_bookings.ticket_type',$type);
 
         $tickets=$builder->orderBy('ticket_bookings.id','DESC')->paginate(15);
