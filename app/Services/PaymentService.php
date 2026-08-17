@@ -46,9 +46,22 @@ class PaymentService
         }
 
         $methodId = (int) ($data['payment_method_id'] ?? 0);
-        $method = $this->db->table('payment_methods')->where('id', $methodId)->where('is_active', 1)->get()->getRowArray();
+        if ($methodId <= 0) {
+            throw new RuntimeException('Please select a valid payment method.');
+        }
+
+        $method = $this->db->table('payment_methods')
+            ->where('id', $methodId)
+            ->where('is_active', 1)
+            ->get()
+            ->getRowArray();
+
         if (!$method) {
             throw new RuntimeException('Please select a valid active payment method.');
+        }
+
+        if (empty($method['clearing_account_id'])) {
+            throw new RuntimeException('Selected payment method does not have a configured clearing account. Please configure the payment method account first.');
         }
 
         $cashBankAccount = (int) $method['clearing_account_id'];

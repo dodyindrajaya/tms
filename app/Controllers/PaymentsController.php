@@ -29,11 +29,16 @@ class PaymentsController extends BaseController
 
     public function create()
     {
-        $bookings = (new BookingModel())
-            ->where('outstanding_amount >', 0)
-            ->where('status !=', 'cancelled')
-            ->orderBy('id','DESC')
-            ->findAll();
+        $db = db_connect();
+
+        $invoices = $db->table('invoices i')
+            ->select('i.id, i.invoice_no, i.outstanding_amount, c.name AS customer_name')
+            ->join('customers c', 'c.id=i.customer_id', 'left')
+            ->where('i.outstanding_amount >', 0)
+            ->where('i.status !=', 'cancelled')
+            ->orderBy('i.id','DESC')
+            ->get()
+            ->getResultArray();
 
         $paymentMethods = (new PaymentMethodModel())
             ->where('is_active', 1)
@@ -42,7 +47,7 @@ class PaymentsController extends BaseController
 
         return view('payments/form', [
             'title'=>'Receive Customer Payment',
-            'bookings'=>$bookings,
+            'invoices' => $invoices,
             'paymentMethods'=>$paymentMethods,
         ]);
     }
@@ -50,9 +55,9 @@ class PaymentsController extends BaseController
     public function store()
     {
         $rules = [
-            'booking_id' => 'required|integer|greater_than[0]',
+            'invoice_id' => 'required|integer|greater_than[0]',
             'payment_method_id' => 'required|integer|greater_than[0]',
-            'payment_date' => 'required|valid_date[Y-m-d]',
+            'payment_date' => 'required',
             'amount' => 'required|numeric|greater_than[0]',
             'reference_no' => 'permit_empty|max_length[100]',
         ];
