@@ -29,6 +29,7 @@ $statusClass = [
         <div class="booking-detail-actions">
             <a class="btn btn-secondary" href="<?= site_url('bookings') ?>">Back</a>
             <a class="btn btn-secondary" href="<?= site_url('bookings/edit/' . $booking['id']) ?>">Edit Booking</a>
+            <button id="toggle-terminal" type="button" class="btn btn-secondary">Terminal View</button>
             <?php if ($booking['status'] !== 'cancelled'): ?>
                 <form method="post"
                       action="<?= site_url('bookings/cancel/' . $booking['id']) ?>"
@@ -315,4 +316,21 @@ $statusClass = [
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?php $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const page = document.querySelector('.booking-detail-page');
+    const btn = document.getElementById('toggle-terminal');
+    if(!page || !btn) return;
+    // initialize from localStorage
+    if(localStorage.getItem('booking_terminal_mode') === '1') page.classList.add('terminal-mode');
+    btn.addEventListener('click', function(){
+        const active = page.classList.toggle('terminal-mode');
+        localStorage.setItem('booking_terminal_mode', active ? '1' : '0');
+        btn.textContent = active ? 'Exit Terminal View' : 'Terminal View';
+    });
+});
+</script>
 <?= $this->endSection() ?>

@@ -156,6 +156,48 @@ button { cursor: pointer; }
     display: flex; justify-content: space-between;
 }
 
+/* Terminal mode styles for booking detail */
+.booking-detail-page.terminal-mode {
+    background: #000 !important;
+    color: #0f0 !important;
+    font-family: "Source Code Pro", "Courier New", monospace;
+}
+.booking-detail-page.terminal-mode .eyebrow,
+.booking-detail-page.terminal-mode .detail-card-header h2,
+.booking-detail-page.terminal-mode h1 {
+    color: #0af !important;
+}
+.booking-detail-page.terminal-mode .card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.booking-detail-page.terminal-mode .btn {
+    background: transparent !important;
+    border: 1px solid #0f0 !important;
+    color: #0f0 !important;
+}
+.booking-detail-page.terminal-mode .btn.btn-primary {
+    border-color: #0af !important;
+    color: #0af !important;
+}
+.booking-detail-page.terminal-mode table,
+.booking-detail-page.terminal-mode th,
+.booking-detail-page.terminal-mode td {
+    color: #0f0 !important;
+    border-color: rgba(255,255,255,0.06) !important;
+}
+.booking-detail-page.terminal-mode .booking-kpi-card strong,
+.booking-detail-page.terminal-mode .detail-info-grid strong {
+    color: #0f0 !important;
+}
+.booking-detail-page.terminal-mode .booking-detail-header,
+.booking-detail-page.terminal-mode .booking-kpi-grid,
+.booking-detail-page.terminal-mode .booking-detail-layout {
+    background: transparent !important;
+}
+
+
 .page-header {
     display: flex; justify-content: space-between; align-items: flex-start;
     gap: 20px; margin-bottom: 22px;
