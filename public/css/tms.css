@@ -412,3 +412,19 @@ tbody tr:hover { background: #fbfdfe; }
 @media(max-width:900px){
     .booking-detail-actions .btn { min-width: 90px; font-size:13px; }
 }
+
+/* Booking summary widget */
+.booking-summary-card { margin: 16px 0; padding: 16px; }
+.booking-summary-card .summary-row { display:flex; justify-content:space-between; gap:18px; align-items:center; }
+.booking-summary-card .summary-left { display:flex; flex-direction:column; gap:8px; }
+.booking-summary-card .summary-right { display:flex; flex-direction:column; gap:8px; text-align:right; }
+.booking-summary-card .label { color:var(--muted); font-size:12px; font-weight:700; }
+.booking-summary-card .value { font-size:16px; color:var(--text); }
+.booking-summary-card .value small { color:var(--muted); margin-left:6px; }
+.booking-summary-card .summary-amount .value strong { font-size:18px; }
+.booking-summary-card .summary-outstanding .value strong { color:var(--danger); }
+
+@media(max-width:900px){
+    .booking-summary-card .summary-row { flex-direction:column; align-items:flex-start; }
+    .booking-summary-card .summary-right { text-align:left; width:100%; }
+}

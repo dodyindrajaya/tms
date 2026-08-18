@@ -43,35 +43,28 @@ $statusClass = [
         </div>
     </div>
 
-    <div class="booking-kpi-grid">
-        <div class="booking-kpi-card">
-            <span>Customer</span>
-            <strong><?= esc($booking['customer_name'] ?? '-') ?></strong>
-            <small><?= esc($booking['customer_code'] ?? '-') ?></small>
-        </div>
-
-        <div class="booking-kpi-card">
-            <span>Travel Date</span>
-            <strong><?= esc($booking['travel_start_date'] ?: '-') ?></strong>
-            <small>
-                <?php if (!empty($booking['travel_end_date'])): ?>
-                    until <?= esc($booking['travel_end_date']) ?>
-                <?php else: ?>
-                    No end date
-                <?php endif; ?>
-            </small>
-        </div>
-
-        <div class="booking-kpi-card">
-            <span>Total Booking</span>
-            <strong><?= $money($booking['total_amount']) ?></strong>
-            <small><?= esc($booking['currency_code']) ?></small>
-        </div>
-
-        <div class="booking-kpi-card booking-kpi-outstanding">
-            <span>Outstanding</span>
-            <strong><?= $money($booking['outstanding_amount']) ?></strong>
-            <small>Paid <?= $money($booking['paid_amount']) ?></small>
+    <div class="booking-summary-card card">
+        <div class="summary-row">
+            <div class="summary-left">
+                <div class="summary-customer">
+                    <div class="label">Customer</div>
+                    <div class="value"><strong><?= esc($booking['customer_name'] ?? '-') ?></strong> <small><?= esc($booking['customer_code'] ?? '') ?></small></div>
+                </div>
+                <div class="summary-dates">
+                    <div class="label">Travel Date</div>
+                    <div class="value"><?= esc($booking['travel_start_date'] ?: '-') ?><?php if (!empty($booking['travel_end_date'])): ?> &nbsp;until&nbsp; <?= esc($booking['travel_end_date']) ?><?php endif; ?></div>
+                </div>
+            </div>
+            <div class="summary-right">
+                <div class="summary-amount">
+                    <div class="label">Total Booking</div>
+                    <div class="value"><strong><?= $money($booking['total_amount']) ?> <span class="currency"><?= esc($booking['currency_code']) ?></span></strong></div>
+                </div>
+                <div class="summary-outstanding">
+                    <div class="label">Outstanding</div>
+                    <div class="value"><strong><?= $money($booking['outstanding_amount']) ?></strong> <small>Paid <?= $money($booking['paid_amount']) ?></small></div>
+                </div>
+            </div>
         </div>
     </div>
 
