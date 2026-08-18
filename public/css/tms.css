@@ -398,3 +398,17 @@ tbody tr:hover { background: #fbfdfe; }
 .journal-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}.journal-summary>div{background:#fff;padding:13px 14px}.journal-summary span{display:block;color:var(--muted);font-size:9px}.journal-summary strong{display:block;margin-top:5px;font-size:13px}.finance-journal-list{max-height:275px;overflow:auto}.finance-journal-row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:11px 15px;border-bottom:1px solid #edf1f3;text-decoration:none}.finance-journal-row:hover{background:#fbfdfe}.journal-date{font-size:10px;font-weight:800;color:var(--primary-dark)}.journal-main strong{display:block;font-size:10px;color:var(--text)}.journal-main small{display:block;color:var(--muted);font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}.journal-amount{font-size:10px;font-weight:800;white-space:nowrap}.text-link{color:var(--primary-dark);font-size:10px;font-weight:800;text-decoration:none;white-space:nowrap}.finance-list{padding:2px 16px}.finance-list-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 2px;border-bottom:1px solid #edf1f3}.finance-list-row:last-child{border-bottom:0}.finance-list-row strong{display:block;font-size:10px;color:var(--text)}.finance-list-row small{display:block;margin-top:3px;color:var(--muted);font-size:9px}.finance-list-row>b{font-size:11px;white-space:nowrap}.finance-empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:10px;width:100%}.finance-note{margin:2px 0 20px;padding:11px 14px;border-radius:8px;background:#eef8fc;border:1px solid #d7edf5;color:#55727e;font-size:10px}.finance-note strong{color:#2b5665}
 @media(max-width:1100px){.finance-stat-grid{grid-template-columns:repeat(2,1fr)}.finance-grid-top,.finance-grid-bottom{grid-template-columns:1fr}}
 @media(max-width:650px){.finance-stat-grid,.cashflow-kpis,.journal-summary{grid-template-columns:1fr}.mini-bars{gap:7px}.finance-card-head{align-items:flex-start;flex-direction:column}.finance-net{align-self:flex-start}}
+
+/* Booking show: button group and customer tweaks */
+.booking-detail-actions .btn-group { display:flex; gap:8px; align-items:center; }
+.booking-detail-actions .btn { min-width:110px; padding:8px 12px; font-weight:700; }
+.booking-detail-actions .btn.btn-danger { min-width:90px; }
+.booking-detail-actions .inline-form { display:inline-block; margin:0; }
+
+.booking-kpi-card.customer-card strong { font-size:18px; color:var(--text); display:block; }
+.booking-kpi-card.customer-card small { color:var(--muted); display:block; }
+.booking-kpi-outstanding strong { color: #c43d3d; }
+
+@media(max-width:900px){
+    .booking-detail-actions .btn { min-width: 90px; font-size:13px; }
+}

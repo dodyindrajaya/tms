@@ -27,17 +27,19 @@ $statusClass = [
         </div>
 
         <div class="booking-detail-actions">
-            <a class="btn btn-secondary" href="<?= site_url('bookings') ?>">Back</a>
-            <a class="btn btn-secondary" href="<?= site_url('bookings/edit/' . $booking['id']) ?>">Edit Booking</a>
-            <button id="toggle-terminal" type="button" class="btn btn-secondary">Terminal View</button>
-            <?php if ($booking['status'] !== 'cancelled'): ?>
-                <form method="post"
-                      action="<?= site_url('bookings/cancel/' . $booking['id']) ?>"
-                      onsubmit="return confirm('Cancel this booking?')">
-                    <?= csrf_field() ?>
-                    <button class="btn btn-danger" type="submit">Cancel</button>
-                </form>
-            <?php endif; ?>
+            <div class="btn-group" role="group" aria-label="booking actions">
+                <a class="btn btn-secondary" href="<?= site_url('bookings') ?>">Back</a>
+                <a class="btn btn-secondary" href="<?= site_url('bookings/edit/' . $booking['id']) ?>">Edit Booking</a>
+                <button id="toggle-terminal" type="button" class="btn btn-secondary">Terminal View</button>
+                <?php if ($booking['status'] !== 'cancelled'): ?>
+                    <form class="inline-form" method="post"
+                          action="<?= site_url('bookings/cancel/' . $booking['id']) ?>"
+                          onsubmit="return confirm('Cancel this booking?')">
+                        <?= csrf_field() ?>
+                        <button class="btn btn-danger" type="submit">Cancel</button>
+                    </form>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
